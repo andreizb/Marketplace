@@ -28,9 +28,12 @@ class Marketplace:
 
         self.producer_capacity = {}
         self.carts = {}
+        self.producer_furniture = {}
+        self.current_products = []
 
         self.producers_lock = Lock()
         self.consumers_lock = Lock()
+        self.cart_lock = Lock()
 
 
     def register_producer(self):
@@ -38,7 +41,7 @@ class Marketplace:
         Returns an id for the producer that calls this.
         """
         with self.producers_lock:
-            self.producer_capacity[self.current_producer_id] = 0
+            self.producer_capacity[self.current_producer_id] = self.queue_size_per_producer
             self.current_producer_id += 1
 
             return  self.current_producer_id - 1
@@ -83,7 +86,18 @@ class Marketplace:
 
         :returns True or False. If the caller receives False, it should wait and then try again
         """
-        pass
+        with self.cart_lock:
+            if product in self.current_products:
+                self.current_products.remove(product)
+                self.carts[cart_id] += product
+
+                producer_id = self.producer_furniture[product]
+                self.producer_capacity[producer_id] += 1
+
+                return True
+
+            return False
+
 
     def remove_from_cart(self, cart_id, product):
         """
@@ -95,7 +109,13 @@ class Marketplace:
         :type product: Product
         :param product: the product to remove from cart
         """
-        pass
+        with self.cart_lock:
+            self.carts[cart_id].remove(product)
+            self.current_products += product
+
+            producer_id = self.producer_furniture[product]
+            self.producer_capacity[producer_id] -= 1
+
 
     def place_order(self, cart_id):
         """
