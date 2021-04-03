@@ -44,7 +44,7 @@ class Consumer(Thread):
             for op in cart:
                 while op["quantity"] > 0:
                     if op["type"] == "add":
-                        if ~self.marketplace.add_to_cart(cart_id, op["product"]):
+                        if not self.marketplace.add_to_cart(cart_id, op["product"]):
                             time.sleep(self.retry_wait_time)
                             continue
                     else:

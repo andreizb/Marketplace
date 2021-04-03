@@ -41,10 +41,12 @@ class Producer(Thread):
     def run(self):
         while True:
             for product in self.products:
-                while product[1] > 0:
-                    if ~self.marketplace.publish(str(self.id), product):
+                nr = product[1]
+
+                while nr > 0:
+                    if not self.marketplace.publish(self.id, product[0]):
                         time.sleep(self.republish_wait_time)
                         continue
 
+                    nr -= 1
                     time.sleep(product[2])
-                    product[1] -= 1
