@@ -38,6 +38,15 @@ class Consumer(Thread):
 
 
     def run(self):
+        """
+        The consumer populates each of his shopping carts accordingly.
+        Each "cart" must be registered in the market. After the cart
+        is registered, the "operations" associated with the current
+        cart are handled. A consumer can add or remove a product with
+        a specific id for a given number of times.
+        If the product is not currently available on the market, the
+        consumer will retry to get the product until it is available.
+        """
         for cart in self.carts:
             cart_id = self.marketplace.new_cart()
 
@@ -52,4 +61,6 @@ class Consumer(Thread):
 
                     opr["quantity"] -= 1
 
+            # After the consumer made his mind about what he has to buy,
+            # he places the order.
             self.marketplace.place_order(cart_id)

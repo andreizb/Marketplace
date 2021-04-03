@@ -39,14 +39,22 @@ class Producer(Thread):
 
 
     def run(self):
+        """
+        The producer tries to publish his products on the market.
+        Each product is a tuple made of the product itself, the
+        available quantity of that product and a waiting time if
+        the product is successfully published on the market.
+        """
         while True:
             for product in self.products:
                 num = product[1]
 
                 while num > 0:
                     if not self.marketplace.publish(self.producer_id, product[0]):
+                        # The producer has to wait before he can try to republish
                         time.sleep(self.republish_wait_time)
                         continue
 
                     num -= 1
+                    # The producer has to wait before he can publish another product
                     time.sleep(product[2])

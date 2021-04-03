@@ -1,0 +1,47 @@
+Tema 1 - Marketplace
+Zbarcea Andrei, 333CB
+
+In cadrul temei s-a urmarit implementarea unui marketplace, in cadrul caruia
+avem mai multi producatori si consumatori.
+
+Codul este structurat in urmatoarele entitati, cu fisierele de implementare
+aferente:
+
+* Producer (producer.py):
+Producatorul va pune produsele pe piata. Acesta are anumite tipuri de produse si
+cate o cantitate disponibila pentru fiecare. Producatorul are un numar limitat
+de produse pe care le poate avea scoase la vanzare simultan, pentru a nu face
+monopol. In cazul in care are deja maximul permis de produse, acesta va astepta
+o anumita durata prestabilita, incercand din nou sa isi puna bunul la vanzare.
+In cazul in care reuseste, acesta va trebui sa astepte o alta perioada de timp,
+specifica fiecarui bun, pentru a isi imagina cum se va imbogati dupa vanzare.
+
+* Consumer (consumer.py):
+Consumatorul va face cumparaturile, fiecare "cart" descriind actiunile sale pe
+parcursul unei "vizite" la magazin: va adauga produse in cos cand vor fi
+disponibile produsele pe care le-a solicitat sau va renunta la anumite produse
+pe care le are deja in cos.
+Dupa ce consumatorul se decide cu greu asupra celor necesare, acesta va plasa
+isi va plasa comanda.
+
+* Marketplace (marketplace.py):
+Entitatea principala a programului, unde va avea loc intregul flux de vanzare
+si cumparare de produse. Vor fi necesare 2 contoare pentru id-urile
+producatorilor si cosurile consumatorilor. Vor fi necesare dictionare pentru
+a mapa un id de producator cu numarul de produse pe care le mai poate publica
+spre vanzare in market, pentru a mapa un produs la id-ul producatorului sau
+si pentru a mapa id-ul unui cos de cumparaturi la o lista cu produsele prezente
+in acel cos. Vom mai avea nevoie de o lista care va contine toate produsele de
+pe "piata" la acel moment. Ca mecanisme de sincronizare vom avea nevoie de 3
+lock-uri pentru a garanta unicitatea id-urilor producatorilor, care se vor
+inghesui sa isi scoata produsele la vanzare, pentru a garanta unicitatea
+id-urilor cosurilor cumparatorilor, care se vor inghesui sa isi faca
+cumparaturile pana la inchiderea magazinelor din cauza noilor restrictii si
+pentru a asigura ordinea si distantarea cumparatorilor: nu se vor imbulzi sa
+cumpere sau sa returneze produse (un singur thread va opera asupra listei).
+Consumatorii vor putea sa plaseze comanda, facand cunoscute tuturor
+cumparaturile efectuate. Pentru a fi siguri ca toata lumea aude binece a
+cumparat fiecare persoana in parte, vom include in cadrul string-ului ce trebuie
+printat delimitatorul de linie (newline). Evitam astfel situatiile neplacute in
+care doua print-uri diferite sfarsesc concatenate, nefiind necesar astfel sa
+mai facem vreo sincronizare.

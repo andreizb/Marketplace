@@ -40,6 +40,9 @@ class Marketplace:
         """
         Returns an id for the producer that calls this.
         """
+
+        # We start with an id of 0 and increment it for each new producer
+        # We also send it as a string. Requirement of the assignment
         with self.producers_lock:
             producer_id = str(self.current_producer_id)
             self.current_producer_id += 1
@@ -60,6 +63,10 @@ class Marketplace:
 
         :returns True or False. If the caller receives False, it should wait and then try again.
         """
+
+        # If the producer has available slots to publish his product, he will do
+        # so. We decrement his associated available capacity, send his product
+        # to the market and map the product to his id.
         if self.producer_capacity[producer_id] > 0:
             self.producer_capacity[producer_id] -= 1
             self.current_products.append(product)
@@ -76,6 +83,10 @@ class Marketplace:
 
         :returns an int representing the cart_id
         """
+
+        # We start with a base cart id of 0 and increment it for each new cart.
+        # We also map the new cart's id to a list which represents the products
+        # that are in the cart. We start with an empty list.
         with self.consumers_lock:
             cart_id = self.current_cart_id
             self.current_cart_id += 1
@@ -96,6 +107,10 @@ class Marketplace:
 
         :returns True or False. If the caller receives False, it should wait and then try again
         """
+
+        # If the required product is available on the market, we take it and add
+        # it in our cart. We also give the respective producer an opportunity to
+        # publish a new product in exchange, so he can make even more money.
         with self.cart_lock:
             if product in self.current_products:
                 self.current_products.remove(product)
@@ -119,6 +134,11 @@ class Marketplace:
         :type product: Product
         :param product: the product to remove from cart
         """
+
+        # We found out that we don't need this product anymore (or we found it
+        # cheaper on another marketplace :) ). We remove the product from the
+        # cart and put it back on sale, updating the seller's publishing
+        # capacity.
         with self.cart_lock:
             self.carts[cart_id].remove(product)
             self.current_products.append(product)
@@ -134,8 +154,10 @@ class Marketplace:
         :type cart_id: Int
         :param cart_id: id cart
         """
-        products = self.carts[cart_id]
-        del self.carts[cart_id]
 
-        for product in products:
+        # We made up our mind about what we will buy. Now everyone will know.
+        # We changed the print format to include the newline in the string and
+        # not as the ending character to make it thread-safe (ordering is not
+        # guaranteed, but concatenation of two lines will not occur.
+        for product in self.carts[cart_id]:
             print(f'{threading.current_thread().getName()} bought {product}\n', end='')
